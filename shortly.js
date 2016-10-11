@@ -3,7 +3,9 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 
+
 var session = require('express-session');
+var cookieParser = require('cookie-parser');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -18,6 +20,7 @@ var app = express();
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+app.use(cookieParser());//would add credentials file here
 app.use(partials());
 // Parse JSON (uniform resource locators)
 app.use(bodyParser.json());
@@ -29,28 +32,41 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true },
-  duration: 1 * 60 * 100
+  cookie: { secure: true,
+            maxAge: 10000,
+            httpOnly: true,
+            signed: false
+             },
+  key: 'ourcookie',
+  duration: 1 * 60 * 1000
 
 }));
-
+console.log('hey line 42');
 
 app.get('/', 
 function(req, res) {
-  //if logged in resirect to /
+  //if logged in redirect to create
+  /*if () {
 
-  
+  } else {*/
   //else redirect to login
-  res.render('login');
+    res.redirect('/login');
+  //
 });
 
 app.get('/create', 
 function(req, res) {
-  res.render('index');
+  //res.render('login');
+
+  //todo: if not logged in
+  res.redirect('/login');
 });
 
 app.get('/links', 
 function(req, res) {
+  //if not logged in
+  res.redirect('/login');
+  //else if logged in
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
@@ -96,16 +112,22 @@ app.get('/login', function(request, response) {
 });
 
 app.post('/login', function(request, response) {
-  console.log(request.body);
+  console.log('req body', request.body);
   var username = request.body.username;
   var password = request.body.password;
-  if (username === '1' /*something in db*/ && password === '2'/*something in db'*/) {
+  //user object from db?
+  var pword = db.knex('users').where({
+    username: username
+  }).select('password');
+  console.log('pw from db', pword);
+  if (password === pword/*something in db'*/) {
     request.session.regenerate(function() {
-      request.session.user = username;
+      //should set cookie
+      request.session.user = username;//name from user object
       response.redirect('/create');
     });
   } else {
-    response.redirect('signup');
+    response.redirect('/create');
   }
 });
 
@@ -146,7 +168,7 @@ function(req, res) {
         hash: 'md'
       })
       .then(function(newUser) {
-        res.status(200).redirect('/login');
+        res.status(200).cookie('monster', 'nom nom').redirect('/login');
 
       });
     }
