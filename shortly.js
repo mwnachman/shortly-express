@@ -24,17 +24,24 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+//express session
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true }
+  cookie: { secure: true },
+  duration: 1 * 60 * 100
+
 }));
 
 
 app.get('/', 
 function(req, res) {
-  res.render('index');
+  //if logged in resirect to /
+
+  
+  //else redirect to login
+  res.render('login');
 });
 
 app.get('/create', 
@@ -106,7 +113,45 @@ app.get('/signup', function(request, response) {
   response.render('signup');
 });
 
-//app.post();
+/*app.post('/signup', function(request, response) {
+  var querystring = '';
+  //db.knex.schema.....
+  //("id" integer not null primary key autoincrement, "username" varchar(255), 
+  //"password" varchar(255), "salt" varchar(255), "hash" varchar(255));
+  //db.knex('users').insert({id: null, username: 'md', password: 'md', salt: 'md', hash: 'md'}).then;
+  new User({})
+});*/
+
+app.post('/signup', 
+function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  new User({
+    id: null, 
+    username: username, 
+    password: password, 
+    salt: 'md', 
+    hash: 'md' })
+  .fetch().then(function(found) {
+    if (found) {
+      res.status(200).send(found.attributes);
+      console.log('Youre a user!!!');
+    } else {
+      //create.then
+      Users.create({
+        id: null, 
+        username: username,
+        password: password,
+        salt: 'md',
+        hash: 'md'
+      })
+      .then(function(newUser) {
+        res.status(200).redirect('/login');
+
+      });
+    }
+  });
+});
 
 
 /************************************************************/
