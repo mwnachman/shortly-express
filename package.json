@@ -21,10 +21,15 @@
     "bluebird": "^3.3.4",
     "body-parser": "^1.15.0",
     "bookshelf": "^0.9.1",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-partials": "^0.3.0",
+<<<<<<< HEAD
     "express-session": "^1.13.0",
+=======
+    "express-session": "^1.14.1",
+>>>>>>> 64a4706c0fc601b89a85c4e2957044ebf0ce007b
     "handlebars": "^4.0.5",
     "knex": "^0.10.0",
     "request": "^2.34.0",
