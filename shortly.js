@@ -32,18 +32,9 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true,
-            maxAge: 10000,
-            httpOnly: true,
-            signed: false
-             },
-  key: 'ourcookie',
-  duration: 1 * 60 * 1000
-
 }));
-console.log('hey line 42');
 
-app.get('/', 
+app.get('/',  
 function(req, res) {
   //if logged in redirect to create
   /*if () {
