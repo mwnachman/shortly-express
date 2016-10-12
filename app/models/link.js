@@ -1,5 +1,5 @@
 var db = require('../config');
-var Click = require('./click');
+var Click = require('./click'); 
 var crypto = require('crypto');
 
 var Link = db.Model.extend({
